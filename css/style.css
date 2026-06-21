@@ -835,6 +835,14 @@ nav.scrolled {
   background: linear-gradient(135deg, #0a0a1a, #0a0a2a);
 }
 
+.projeto-thumb-5 {
+  background: linear-gradient(135deg, #1a0a00, #3a1a00);
+}
+
+.projeto-thumb-5 img {
+  object-position: 10% center;
+}
+
 .projeto-info {
   padding: 1.5rem;
   flex: 1;
