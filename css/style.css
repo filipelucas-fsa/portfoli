@@ -6,7 +6,7 @@
   --vinho: #5B0A0A;
   --vermelho: #8A1010;
   --texto: #F0F0F0;
-  --texto-dim: #999;
+  --texto-dim: #aaa;
   --borda: #222;
   --font-display: 'Cormorant Garamond', serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -434,7 +434,7 @@ nav.scrolled {
   font-family: var(--font-display);
   font-size: clamp(2.5rem, 5vw, 5rem);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   line-height: 1.1;
   margin-bottom: 1.5rem;
   opacity: 0;
@@ -447,8 +447,8 @@ nav.scrolled {
 }
 
 .hero-subtitle {
-  font-size: clamp(1rem, 1.8vw, 1.25rem);
-  font-weight: 500;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 600;
   color: var(--texto);
   margin-bottom: 1rem;
   opacity: 0;
@@ -460,7 +460,7 @@ nav.scrolled {
   font-size: clamp(0.9rem, 1.2vw, 1rem);
   color: var(--texto-dim);
   line-height: 1.7;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.75rem;
   max-width: 520px;
   opacity: 0;
   transform: translateY(20px);
@@ -560,13 +560,14 @@ nav.scrolled {
   object-fit: cover;
   border-radius: 2px;
   filter: grayscale(0.3);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
 }
 
 .sobre-image::after {
   content: '';
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(138, 16, 16, 0.15);
+  border: 1px solid rgba(138, 16, 16, 0.25);
   border-radius: 2px;
   pointer-events: none;
 }
@@ -603,12 +604,14 @@ nav.scrolled {
   border-top: 2px solid var(--vinho);
   transition: all var(--transition);
   cursor: default;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
 
 .servico-card:hover {
   transform: translateY(-4px);
   border-top-color: var(--vermelho);
   background: #1a1a1a;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
 }
 
 .servico-icon {
@@ -674,8 +677,19 @@ nav.scrolled {
 }
 
 .stack-icon {
-  font-size: 1.4rem;
+  width: 24px;
+  height: 24px;
+  color: var(--texto-dim);
   line-height: 1;
+}
+
+.stack-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.stack-card:hover .stack-icon {
+  color: var(--vermelho);
 }
 
 .stack-name {
@@ -724,6 +738,7 @@ nav.scrolled {
   font-weight: 700;
   color: var(--vermelho);
   line-height: 1;
+  text-shadow: 0 0 15px rgba(138,16,16,0.25);
 }
 
 .dado-suffix {
@@ -759,10 +774,12 @@ nav.scrolled {
   transition: all var(--transition);
   display: flex;
   flex-direction: column;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.2);
 }
 
 .projeto-card:hover {
   transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
 }
 
 .projeto-thumb {
@@ -1115,9 +1132,9 @@ footer {
 .footer-copy {
   text-align: center;
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.25);
   padding: 1.5rem 0;
-  border-top: 1px solid rgba(255,255,255,0.03);
+  border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 /* === BACK TO TOP === */
@@ -1160,6 +1177,20 @@ footer {
   height: 20px;
 }
 
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary:active {
+  background: #7a0e0e;
+  border-color: #7a0e0e;
+}
+
+.btn-secondary:active {
+  border-color: var(--vinho);
+  background: rgba(90, 10, 10, 0.15);
+}
+
 /* === ACCESSIBILITY === */
 :focus-visible {
   outline: 1px solid var(--vermelho);
@@ -1173,7 +1204,7 @@ footer {
 #dados,
 #projetos,
 #trabalho {
-  border-bottom: 1px solid rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 /* === SCROLL INDICATOR === */
