@@ -860,6 +860,10 @@ nav.scrolled {
   object-position: 10% center;
 }
 
+.projeto-thumb-7 {
+  background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+}
+
 .projeto-info {
   padding: 1.5rem;
   flex: 1;
@@ -906,6 +910,76 @@ nav.scrolled {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.projetos-extras {
+  display: none;
+}
+
+.projetos-extras.visible {
+  display: block;
+}
+
+.projetos-extras-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .projetos-extras-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+.projetos-mais {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.btn-mais {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid var(--vermelho);
+  color: var(--vermelho);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-mais:hover {
+  background: var(--vermelho);
+  color: var(--texto);
+}
+
+.btn-mais-icon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s ease;
+}
+
+.btn-mais.active .btn-mais-icon {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 768px) {
+  .projetos-mais {
+    margin-top: 1.5rem;
+  }
 }
 
 /* === TIMELINE === */
@@ -1241,6 +1315,9 @@ footer {
 .reveal-delay-2 { transition-delay: 0.2s; }
 .reveal-delay-3 { transition-delay: 0.3s; }
 .reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+.reveal-delay-6 { transition-delay: 0.6s; }
+.reveal-delay-7 { transition-delay: 0.1s; }
 
 /* === RESPONSIVE === */
 

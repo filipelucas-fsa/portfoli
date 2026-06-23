@@ -632,3 +632,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 });
+
+function toggleProjetos() {
+  var extras = document.getElementById('projetosExtras');
+  var btn = document.getElementById('btnMais');
+  if (!extras || !btn) return;
+
+  var isVisible = extras.classList.contains('visible');
+
+  if (isVisible) {
+    extras.classList.remove('visible');
+    btn.classList.remove('active');
+    btn.innerHTML = 'Ver mais <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="btn-mais-icon"><polyline points="6 9 12 15 18 9"/></svg>';
+  } else {
+    extras.classList.add('visible');
+    btn.classList.add('active');
+    btn.innerHTML = 'Ver menos <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="btn-mais-icon"><polyline points="6 9 12 15 18 9"/></svg>';
+  }
+}
