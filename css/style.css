@@ -804,6 +804,10 @@ nav.scrolled {
   object-fit: cover;
 }
 
+.projeto-thumb-8 img {
+  object-position: 25% 55%;
+}
+
 .projeto-thumb::after {
   content: '';
   position: absolute;
