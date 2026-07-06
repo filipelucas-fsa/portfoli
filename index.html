@@ -5,6 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Portfólio de Filipe Lucas — Desenvolvedor de experiências digitais para pequenos negócios.">
   <title>Filipe Lucas — Desenvolvedor</title>
+
+  <!-- Favicons -->
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#090909">
+
+  <!-- Open Graph / compartilhamento (WhatsApp, LinkedIn, Facebook) -->
+  <!-- IMPORTANTE: troque os caminhos de og:image e og:url por URLs absolutas (https://seudominio.com/...) assim que o site estiver no ar -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Filipe Lucas — Desenvolvedor de experiências digitais">
+  <meta property="og:description" content="Sites modernos, rápidos e pensados para transformar visitantes em clientes.">
+  <meta property="og:image" content="img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="pt_BR">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Filipe Lucas — Desenvolvedor de experiências digitais">
+  <meta name="twitter:description" content="Sites modernos, rápidos e pensados para transformar visitantes em clientes.">
+  <meta name="twitter:image" content="img/og-image.png">
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -13,8 +38,30 @@
 
   <div class="noise-overlay" aria-hidden="true"></div>
   <div class="atmosphere" aria-hidden="true"></div>
+  <div class="bat-signal-sky" aria-hidden="true">
+    <svg viewBox="0 0 200 200" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="beamGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ff2020" stop-opacity="0.55"/>
+          <stop offset="55%" stop-color="#ff2020" stop-opacity="0.12"/>
+          <stop offset="100%" stop-color="#ff2020" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <polygon points="100,0 55,200 145,200" fill="url(#beamGrad)"/>
+    </svg>
+  </div>
+  <div class="siren-flicker" aria-hidden="true"></div>
   <div class="vignette" aria-hidden="true"></div>
   <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="custom-cursor" aria-hidden="true">
+    <div class="cursor-ring"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-bat"></div>
+  </div>
+
+  <div class="letterbox-bar letterbox-top" aria-hidden="true"></div>
+  <div class="letterbox-bar letterbox-bottom" aria-hidden="true"></div>
+  <div class="scroll-progress" aria-hidden="true"></div>
 
   <nav>
     <a href="#hero" class="nav-logo">F<span>L</span></a>
@@ -38,6 +85,7 @@
     <div class="smooth-content">
 
   <section id="hero">
+    <canvas id="rainCanvas" aria-hidden="true"></canvas>
     <div class="hero-light" aria-hidden="true"></div>
     <div class="hero-content">
       <h1 class="hero-name"><span>FILIPE</span> LUCAS</h1>
@@ -60,7 +108,7 @@
     </div>
   </section>
 
-  <section id="sobre">
+  <section id="sobre" data-transition="wipe">
     <div class="container">
       <div class="sobre-grid">
         <div class="sobre-image reveal">
@@ -76,7 +124,7 @@
     </div>
   </section>
 
-  <section id="stack">
+  <section id="stack" data-transition="glitch">
     <div class="container">
       <h2 class="section-title reveal">Minha Stack</h2>
       <div class="stack-grid">
@@ -113,7 +161,7 @@
     </div>
   </section>
 
-  <section id="servicos">
+  <section id="servicos" data-transition="spotlight">
     <div class="container">
       <h2 class="section-title reveal">Como posso ajudar seu negócio</h2>
       <div class="servicos-grid">
@@ -167,7 +215,7 @@
     </div>
   </section>
 
-  <section id="dados">
+  <section id="dados" data-transition="blinds">
     <div class="container">
       <div class="dados-grid">
         <div class="dado-item reveal">
@@ -186,7 +234,7 @@
     </div>
   </section>
 
-  <section id="projetos">
+  <section id="projetos" data-transition="diagonal">
     <div class="container">
       <h2 class="section-title reveal">Projetos</h2>
       <div class="projetos-grid">
@@ -334,7 +382,7 @@
     </div>
   </section>
 
-  <section id="trabalho">
+  <section id="trabalho" data-transition="scanline">
     <div class="container">
       <h2 class="section-title reveal">Como eu trabalho</h2>
       <div class="timeline">
@@ -377,7 +425,7 @@
     </div>
   </section>
 
-  <section id="contato">
+  <section id="contato" data-transition="flash">
     <div class="container">
       <h2 class="section-title reveal">Contato</h2>
       <div class="contact-content reveal">
@@ -455,6 +503,8 @@
     </svg>
   </button>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

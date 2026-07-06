@@ -7,7 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       var preloader = document.getElementById('preloader');
 
-      var SAFETY_MS = 4000;
+      // Tempo real de exibição ≈ SWEEP_MS + FLASH_HOLD_MS + FADE_MS.
+      // A margem de segurança fica bem acima disso para nunca cortar a animação no meio.
+      var SWEEP_MS = 2600;
+      var FLASH_HOLD_MS = 550;
+      var FADE_MS = 650;
+      var SAFETY_MS = SWEEP_MS + FLASH_HOLD_MS + FADE_MS + 1500;
+
       var safetyId = setTimeout(function () {
         console.log('[preloader] ⏰ fallback');
         if (preloader && preloader.parentNode) preloader.remove();
@@ -35,11 +41,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
       console.log('[preloader] ▶ iniciado');
 
+      // Curva de easing cinematográfica: acelera, sustenta, desacelera suave no fim.
+      function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+
       var S = 'http://www.w3.org/2000/svg';
 
       // ── Container ──
       var container = document.createElement('div');
       container.className = 'preloader-logo-container';
+
+      // ── Camada 0: halo ambiente reativo ao progresso ──
+      var ambientGlow = document.createElement('div');
+      ambientGlow.className = 'preloader-glow-ambient';
+      container.appendChild(ambientGlow);
 
       // ── Camada 1: PNG escuro (base) ──
       var logoImg = document.createElement('img');
@@ -120,7 +136,20 @@ document.addEventListener('DOMContentLoaded', () => {
       svg.appendChild(outlineImg);
 
       container.appendChild(svg);
+
+      // ── Camada 4: lampejo de ignição ao concluir a varredura ──
+      var flash = document.createElement('div');
+      flash.className = 'preloader-flash';
+      container.appendChild(flash);
+
       preloader.appendChild(container);
+
+      // ── Contador percentual (abaixo do logo) ──
+      var percentEl = document.createElement('div');
+      percentEl.className = 'preloader-percent';
+      percentEl.textContent = '000%';
+      preloader.appendChild(percentEl);
+      requestAnimationFrame(function () { percentEl.classList.add('visible'); });
 
       // ── Iniciar quando o PNG base carregar ──
       var started = false;
@@ -138,25 +167,33 @@ document.addEventListener('DOMContentLoaded', () => {
         var t0 = null;
         function sweep(ts) {
           if (!t0) t0 = ts;
-          var p = Math.min((ts - t0) / 3000, 1);
-          maskEl.style.strokeDashoffset = (circum * (1 - p)) + 'px';
-          if (p < 1) {
+          var raw = Math.min((ts - t0) / SWEEP_MS, 1);
+          var eased = easeInOutCubic(raw);
+
+          maskEl.style.strokeDashoffset = (circum * (1 - eased)) + 'px';
+          container.style.setProperty('--scan', eased.toFixed(3));
+          percentEl.textContent = String(Math.round(eased * 100)).padStart(3, '0') + '%';
+
+          if (raw < 1) {
             requestAnimationFrame(sweep);
           } else {
+            // Sequência de conclusão: lampejo → glow sustentado → fade elegante
+            flash.classList.add('active');
             svg.classList.add('glow');
+
+            setTimeout(function () {
+              percentEl.classList.remove('visible');
+              preloader.classList.add('fade-out');
+              clearTimeout(safetyId);
+              setTimeout(function () {
+                if (preloader && preloader.parentNode) preloader.remove();
+                document.body.classList.add('loaded');
+                console.log('[preloader] ✓ removido');
+              }, FADE_MS);
+            }, FLASH_HOLD_MS);
           }
         }
         requestAnimationFrame(sweep);
-
-        setTimeout(function () {
-          preloader.classList.add('fade-out');
-          clearTimeout(safetyId);
-          setTimeout(function () {
-            if (preloader && preloader.parentNode) preloader.remove();
-            document.body.classList.add('loaded');
-            console.log('[preloader] ✓ removido');
-          }, 400);
-        }, 3400);
       }
 
       logoImg.onload = startAnim;
@@ -198,7 +235,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function applyScroll(y) {
     wrapper.style.transform = `translateY(${-y}px)`;
+    if (window.ScrollTrigger) ScrollTrigger.update();
   }
+
+  const batSignalSky = document.querySelector('.bat-signal-sky');
+  const scrollProgressBar = document.querySelector('.scroll-progress');
 
   function updateEffects() {
     if (nav) {
@@ -215,6 +256,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const heroHeight = heroSection.offsetHeight;
       const progress = Math.min(current / heroHeight, 1);
       heroImage.style.opacity = 1 - progress;
+    }
+
+    // Bat-signal distante varre o céu conforme o usuário percorre a página —
+    // dá a sensação de que Gotham continua se movendo por trás do conteúdo
+    const scrollProgress = maxScroll > 0 ? current / maxScroll : 0;
+
+    if (batSignalSky && !prefersReducedMotion) {
+      const angle = -16 + scrollProgress * 34; // varre de -16° a +18°
+      batSignalSky.style.transform = `rotate(${angle.toFixed(2)}deg)`;
+    }
+
+    if (scrollProgressBar) {
+      scrollProgressBar.style.width = (scrollProgress * 100).toFixed(2) + '%';
     }
   }
 
@@ -359,31 +413,324 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // === SCROLL REVEAL ===
-  if (!prefersReducedMotion) {
-    const revealElements = document.querySelectorAll('.reveal');
-    let countersStarted = false;
+  // === GSAP CINEMATIC LAYER (bridge com o scroll customizado) ===
+  const gsapReady = !prefersReducedMotion && window.gsap && window.ScrollTrigger;
 
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          revealObserver.unobserve(entry.target);
+  if (gsapReady) {
+    try {
+      gsap.registerPlugin(ScrollTrigger);
 
-          if (entry.target.closest('#dados') && !countersStarted) {
-            countersStarted = true;
-            startCounters();
+      // Ponte entre o fake-scroll (transform em .smooth-wrapper) e o ScrollTrigger.
+      // getBoundingClientRect já reflete a posição real na tela (o transform já moveu
+      // o layout visualmente), então só precisamos informar o "scrollTop" fake.
+      ScrollTrigger.scrollerProxy(document.body, {
+        scrollTop(value) {
+          if (arguments.length) { setScroll(value); }
+          return current;
+        },
+        getBoundingClientRect() {
+          return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+        },
+        pinType: 'transform',
+      });
+      ScrollTrigger.defaults({ scroller: document.body });
+    } catch (err) {
+      console.error('[cineFX] falha ao inicializar ScrollTrigger proxy:', err);
+    }
+  }
+
+  // === SCROLL REVEAL CINEMATOGRÁFICO ===
+  if (gsapReady) {
+    try {
+      document.querySelectorAll('section').forEach((section) => {
+        const items = Array.from(section.querySelectorAll('.reveal'));
+        if (!items.length) return;
+
+        const titles = items.filter((el) => el.classList.contains('section-title'));
+        const others = items.filter((el) => !el.classList.contains('section-title'));
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 82%',
+            once: true,
+          },
+        });
+
+        // Títulos: varredura vermelha revelando o texto (mesma linguagem do preloader)
+        titles.forEach((title) => {
+          title.style.position = title.style.position || 'relative';
+          const scan = document.createElement('span');
+          scan.className = 'title-scanline';
+          title.appendChild(scan);
+
+          tl.to(title, { clipPath: 'inset(0 0% 0 0)', duration: 0.9, ease: 'power2.inOut' }, 0)
+            .fromTo(scan, { left: '0%' }, { left: '100%', duration: 0.9, ease: 'power2.inOut' }, 0)
+            .to(scan, { opacity: 0, duration: 0.25 }, 0.75);
+        });
+
+        // Demais elementos: entrada com profundidade 3D, em stagger
+        if (others.length) {
+          tl.to(others, {
+            opacity: 1,
+            rotateX: 0,
+            y: 0,
+            scale: 1,
+            filter: 'blur(0px)',
+            duration: 0.9,
+            ease: 'power3.out',
+            stagger: 0.1,
+          }, titles.length ? 0.15 : 0);
+        }
+
+        // Contadores da seção "Números" disparam junto com o reveal
+        if (section.id === 'dados') {
+          tl.call(() => startCounters(), null, 0.2);
+        }
+      });
+
+      ScrollTrigger.refresh();
+    } catch (err) {
+      console.error('[cineFX] falha no reveal cinematográfico:', err);
+      document.querySelectorAll('.reveal').forEach((el) => {
+        el.style.opacity = 1;
+        el.style.transform = 'none';
+        el.style.filter = 'none';
+        el.style.clipPath = 'none';
+      });
+    }
+  } else {
+    // Reduced motion / sem GSAP: mostra tudo direto, sem animação
+    // (os números em #dados já vêm com o valor final no próprio HTML)
+    document.querySelectorAll('.reveal').forEach((el) => {
+      el.style.opacity = 1;
+      el.style.transform = 'none';
+      el.style.filter = 'none';
+      el.style.clipPath = 'none';
+    });
+  }
+
+  // === TRANSIÇÕES CINEMATOGRÁFICAS — uma linguagem visual diferente por seção ===
+  if (gsapReady) {
+    try {
+      document.querySelectorAll('section[data-transition], #hero').forEach((section) => {
+        const type = section.dataset.transition;
+        if (!type) return; // hero tem sua própria abertura, não recebe transição de scroll
+
+        const wrap = document.createElement('div');
+        wrap.className = 'section-sweep';
+        section.appendChild(wrap);
+
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: section, start: 'top 78%', once: true },
+        });
+
+        switch (type) {
+          case 'wipe': {
+            // Cortina de cinema: painel escuro se recolhe para cima revelando a seção
+            const panel = document.createElement('div');
+            panel.className = 'tr-wipe';
+            wrap.appendChild(panel);
+            tl.fromTo(panel, { scaleY: 1 }, { scaleY: 0, duration: 1.1, ease: 'power3.inOut' });
+            break;
+          }
+
+          case 'glitch': {
+            // Falha de sinal: blocos e linhas vermelhas piscando antes de estabilizar
+            const block = document.createElement('div');
+            block.className = 'tr-glitch-block';
+            wrap.appendChild(block);
+            const lines = [];
+            for (let i = 0; i < 4; i++) {
+              const l = document.createElement('div');
+              l.className = 'tr-glitch-line';
+              l.style.top = (15 + i * 22) + '%';
+              wrap.appendChild(l);
+              lines.push(l);
+            }
+            tl.to(block, { opacity: 0, duration: 0.05 }, 0.5)
+              .set(block, { opacity: 1 }, 0.55)
+              .to(block, { opacity: 0, duration: 0.4, ease: 'steps(4)' }, 0.6);
+            lines.forEach((l, i) => {
+              tl.fromTo(l, { opacity: 0, xPercent: -100 * (i % 2 === 0 ? 1 : -1) },
+                { opacity: 1, xPercent: 0, duration: 0.12 }, 0.15 + i * 0.07)
+                .to(l, { opacity: 0, duration: 0.15 }, 0.35 + i * 0.07);
+            });
+            break;
+          }
+
+          case 'spotlight': {
+            // Holofote circular que se expande a partir do centro
+            const circle = document.createElement('div');
+            circle.className = 'tr-spotlight';
+            wrap.appendChild(circle);
+            tl.fromTo(circle, { scale: 0.15 }, { scale: 1.4, duration: 1.2, ease: 'power2.inOut' });
+            break;
+          }
+
+          case 'blinds': {
+            // Venezianas verticais se abrem de cima para baixo
+            const blinds = document.createElement('div');
+            blinds.className = 'tr-blinds';
+            const cols = 8;
+            const bars = [];
+            for (let i = 0; i < cols; i++) {
+              const b = document.createElement('div');
+              b.className = 'tr-blind';
+              blinds.appendChild(b);
+              bars.push(b);
+            }
+            wrap.appendChild(blinds);
+            tl.to(bars, { scaleY: 0, duration: 0.9, ease: 'power2.inOut', stagger: 0.06 }, 0);
+            break;
+          }
+
+          case 'scanline': {
+            // Feixe vermelho varre de cima a baixo revelando a seção (linguagem do preloader)
+            const bg = document.createElement('div');
+            bg.className = 'tr-scanline-bg';
+            const beam = document.createElement('div');
+            beam.className = 'tr-scanline-beam';
+            wrap.appendChild(bg);
+            wrap.appendChild(beam);
+            tl.fromTo(beam, { top: '0%' }, { top: '100%', duration: 1.1, ease: 'power2.inOut' }, 0)
+              .to(bg, {
+                clipPath: 'inset(100% 0 0 0)',
+                duration: 1.1,
+                ease: 'power2.inOut',
+              }, 0);
+            break;
+          }
+
+          case 'flash': {
+            // Lampejo curto, como um clarão de raio ou flash de câmera
+            const flash = document.createElement('div');
+            flash.className = 'tr-flash';
+            wrap.appendChild(flash);
+            tl.to(flash, { opacity: 0.9, duration: 0.08, ease: 'power1.in' })
+              .to(flash, { opacity: 0, duration: 0.6, ease: 'power2.out' });
+            break;
+          }
+
+          case 'diagonal':
+          default: {
+            // Varredura diagonal original (mantida para #projetos)
+            const bar = document.createElement('div');
+            bar.className = 'sweep-bar';
+            wrap.appendChild(bar);
+            tl.fromTo(bar, { xPercent: -160 }, { xPercent: 460, duration: 1.1, ease: 'power2.inOut' });
+            break;
           }
         }
       });
-    }, {
-      threshold: 0.08,
-      rootMargin: '0px 0px -40px 0px'
-    });
+    } catch (err) {
+      console.error('[cineFX] falha nas transições entre seções:', err);
+    }
+  }
 
-    revealElements.forEach(el => revealObserver.observe(el));
-  } else {
-    document.querySelectorAll('.reveal').forEach(el => el.classList.add('revealed'));
+  // === TILT 3D NOS CARDS ===
+  if (gsapReady && window.matchMedia('(pointer: fine)').matches) {
+    try {
+      function attach3DTilt(selector, maxDeg) {
+        document.querySelectorAll(selector).forEach((card) => {
+          card.style.transformStyle = 'preserve-3d';
+
+          card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const px = (e.clientX - rect.left) / rect.width;
+            const py = (e.clientY - rect.top) / rect.height;
+            const rotateY = (px - 0.5) * maxDeg * 2;
+            const rotateX = (0.5 - py) * maxDeg * 2;
+            gsap.to(card, {
+              rotateX, rotateY,
+              transformPerspective: 700,
+              duration: 0.4,
+              ease: 'power2.out',
+            });
+          });
+
+          card.addEventListener('mouseleave', () => {
+            gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.6, ease: 'power3.out' });
+          });
+        });
+      }
+
+      attach3DTilt('.servico-card', 6);
+      attach3DTilt('.stack-card', 8);
+      attach3DTilt('.projeto-card', 5);
+    } catch (err) {
+      console.error('[cineFX] falha no tilt 3D:', err);
+    }
+  }
+
+  // === PARALLAX 3D NA IMAGEM DO HERO ===
+  if (gsapReady && heroImage && window.matchMedia('(pointer: fine)').matches) {
+    try {
+      document.addEventListener('mousemove', (e) => {
+        const px = e.clientX / window.innerWidth;
+        const py = e.clientY / window.innerHeight;
+        const rotateY = (px - 0.5) * 10;
+        const rotateX = (0.5 - py) * 8;
+        gsap.to(heroImage, {
+          rotateX, rotateY,
+          transformPerspective: 1200,
+          duration: 0.7,
+          ease: 'power2.out',
+        });
+      });
+    } catch (err) {
+      console.error('[cineFX] falha no parallax do hero:', err);
+    }
+  }
+
+  // === CHUVA AMBIENTE (canvas leve) ===
+  if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
+    try {
+      const canvas = document.getElementById('rainCanvas');
+      const rainHost = document.getElementById('hero');
+      if (canvas && rainHost) {
+        const ctx = canvas.getContext('2d');
+        let drops = [];
+        let rainW = 0, rainH = 0;
+
+        function sizeCanvas() {
+          rainW = canvas.width = rainHost.offsetWidth;
+          rainH = canvas.height = rainHost.offsetHeight;
+          const count = Math.floor((rainW * rainH) / 22000);
+          drops = Array.from({ length: count }, () => ({
+            x: Math.random() * rainW,
+            y: Math.random() * rainH,
+            len: 10 + Math.random() * 18,
+            speed: 6 + Math.random() * 7,
+            opacity: 0.08 + Math.random() * 0.18,
+          }));
+        }
+
+        function drawRain() {
+          ctx.clearRect(0, 0, rainW, rainH);
+          ctx.strokeStyle = 'rgba(200,210,230,1)';
+          ctx.lineWidth = 1;
+          drops.forEach((d) => {
+            ctx.globalAlpha = d.opacity;
+            ctx.beginPath();
+            ctx.moveTo(d.x, d.y);
+            ctx.lineTo(d.x - 2, d.y + d.len);
+            ctx.stroke();
+            d.y += d.speed;
+            d.x -= 0.6;
+            if (d.y > rainH) { d.y = -d.len; d.x = Math.random() * rainW; }
+          });
+          ctx.globalAlpha = 1;
+          requestAnimationFrame(drawRain);
+        }
+
+        sizeCanvas();
+        window.addEventListener('resize', sizeCanvas);
+        requestAnimationFrame(drawRain);
+      }
+    } catch (err) {
+      console.error('[cineFX] falha na chuva ambiente:', err);
+    }
   }
 
   function startCounters() {
@@ -437,6 +784,55 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateGlow() {
       glow.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
       rafId = null;
+    }
+  }
+
+  // === CURSOR CUSTOMIZADO — retícula vermelha, vira bat-signal sobre botões/links ===
+  if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
+    const cursorEl = document.querySelector('.custom-cursor');
+
+    if (cursorEl) {
+      let cx = -100, cy = -100;
+      let rx = -100, ry = -100;
+      let cursorRafId = null;
+
+      function loopCursor() {
+        // A retícula segue o mouse; o dot central tem leve arrasto para dar peso "mecânico"
+        rx += (cx - rx) * 0.35;
+        ry += (cy - ry) * 0.35;
+        cursorEl.style.transform = `translate(${rx}px, ${ry}px)`;
+        cursorRafId = requestAnimationFrame(loopCursor);
+      }
+      loopCursor();
+
+      document.addEventListener('mousemove', (e) => {
+        cx = e.clientX;
+        cy = e.clientY;
+        if (!cursorEl.classList.contains('active')) {
+          cursorEl.classList.add('active');
+        }
+      });
+
+      document.addEventListener('mouseleave', () => {
+        cursorEl.classList.remove('active');
+      });
+
+      const hoverTargets = 'a, button, .btn, .servico-card, .stack-card, .projeto-card, input, textarea, [role="button"]';
+
+      document.addEventListener('mouseover', (e) => {
+        if (e.target.closest && e.target.closest(hoverTargets)) {
+          cursorEl.classList.add('cursor-hover');
+        }
+      });
+
+      document.addEventListener('mouseout', (e) => {
+        if (e.target.closest && e.target.closest(hoverTargets)) {
+          const related = e.relatedTarget;
+          if (!related || !(related.closest && related.closest(hoverTargets))) {
+            cursorEl.classList.remove('cursor-hover');
+          }
+        }
+      });
     }
   }
 
@@ -609,6 +1005,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (Math.abs(newOpacity - currentAuraOpacity) > 0.005) {
         currentAuraOpacity = newOpacity;
         auraContainer.style.opacity = newOpacity;
+        auraContainer.classList.toggle('aura-active', newOpacity > 0.05);
       }
 
       if (Math.abs(newTarget - targetOffset) > 10) {
@@ -625,6 +1022,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!ready) return;
       currentAuraOpacity = 0;
       auraContainer.style.opacity = '0';
+      auraContainer.classList.remove('aura-active');
       targetOffset = totalMaxLength;
       if (!auraAnimId) {
         auraAnimId = requestAnimationFrame(animateAura);
