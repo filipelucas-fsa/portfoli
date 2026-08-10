@@ -5,31 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Portfólio de Filipe Lucas — Desenvolvedor de experiências digitais para pequenos negócios.">
   <title>Filipe Lucas — Desenvolvedor</title>
-
-  <!-- Favicons -->
-  <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
-  <meta name="theme-color" content="#090909">
-
-  <!-- Open Graph / compartilhamento (WhatsApp, LinkedIn, Facebook) -->
-  <!-- IMPORTANTE: troque os caminhos de og:image e og:url por URLs absolutas (https://seudominio.com/...) assim que o site estiver no ar -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Filipe Lucas — Desenvolvedor de experiências digitais">
-  <meta property="og:description" content="Sites modernos, rápidos e pensados para transformar visitantes em clientes.">
-  <meta property="og:image" content="img/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:locale" content="pt_BR">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Filipe Lucas — Desenvolvedor de experiências digitais">
-  <meta name="twitter:description" content="Sites modernos, rápidos e pensados para transformar visitantes em clientes.">
-  <meta name="twitter:image" content="img/og-image.png">
-
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -38,30 +13,9 @@
 
   <div class="noise-overlay" aria-hidden="true"></div>
   <div class="atmosphere" aria-hidden="true"></div>
-  <div class="bat-signal-sky" aria-hidden="true">
-    <svg viewBox="0 0 200 200" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="beamGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#ff2020" stop-opacity="0.55"/>
-          <stop offset="55%" stop-color="#ff2020" stop-opacity="0.12"/>
-          <stop offset="100%" stop-color="#ff2020" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      <polygon points="100,0 55,200 145,200" fill="url(#beamGrad)"/>
-    </svg>
-  </div>
   <div class="siren-flicker" aria-hidden="true"></div>
   <div class="vignette" aria-hidden="true"></div>
   <div class="cursor-glow" aria-hidden="true"></div>
-  <div class="custom-cursor" aria-hidden="true">
-    <div class="cursor-ring"></div>
-    <div class="cursor-dot"></div>
-    <div class="cursor-bat"></div>
-  </div>
-
-  <div class="letterbox-bar letterbox-top" aria-hidden="true"></div>
-  <div class="letterbox-bar letterbox-bottom" aria-hidden="true"></div>
-  <div class="scroll-progress" aria-hidden="true"></div>
 
   <nav>
     <a href="#hero" class="nav-logo">F<span>L</span></a>
@@ -85,7 +39,6 @@
     <div class="smooth-content">
 
   <section id="hero">
-    <canvas id="rainCanvas" aria-hidden="true"></canvas>
     <div class="hero-light" aria-hidden="true"></div>
     <div class="hero-content">
       <h1 class="hero-name"><span>FILIPE</span> LUCAS</h1>
@@ -108,7 +61,7 @@
     </div>
   </section>
 
-  <section id="sobre" data-transition="wipe">
+  <section id="sobre">
     <div class="container">
       <div class="sobre-grid">
         <div class="sobre-image reveal">
@@ -124,7 +77,7 @@
     </div>
   </section>
 
-  <section id="stack" data-transition="glitch">
+  <section id="stack">
     <div class="container">
       <h2 class="section-title reveal">Minha Stack</h2>
       <div class="stack-grid">
@@ -142,17 +95,25 @@
         </div>
         <div class="stack-card reveal reveal-delay-4">
           <span class="stack-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></span>
-          <span class="stack-name">Inteligência Artificial</span>
+          <span class="stack-name">Claude Code</span>
         </div>
-        <div class="stack-card reveal reveal-delay-1">
+        <div class="stack-card reveal reveal-delay-5">
+          <span class="stack-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.2"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(120 12 12)"/></svg></span>
+          <span class="stack-name">React</span>
+        </div>
+        <div class="stack-card reveal reveal-delay-6">
+          <span class="stack-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span>
+          <span class="stack-name">Supabase</span>
+        </div>
+        <div class="stack-card reveal reveal-delay-7">
           <span class="stack-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg></span>
           <span class="stack-name">OpenCode</span>
         </div>
-        <div class="stack-card reveal reveal-delay-2">
+        <div class="stack-card reveal reveal-delay-8">
           <span class="stack-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span>
           <span class="stack-name">GitHub</span>
         </div>
-        <div class="stack-card reveal reveal-delay-3 stack-future">
+        <div class="stack-card reveal reveal-delay-9 stack-future">
           <span class="stack-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
           <span class="stack-name">n8n</span>
           <span class="stack-badge">Em breve</span>
@@ -161,7 +122,7 @@
     </div>
   </section>
 
-  <section id="servicos" data-transition="spotlight">
+  <section id="servicos">
     <div class="container">
       <h2 class="section-title reveal">Como posso ajudar seu negócio</h2>
       <div class="servicos-grid">
@@ -215,11 +176,11 @@
     </div>
   </section>
 
-  <section id="dados" data-transition="blinds">
+  <section id="dados">
     <div class="container">
       <div class="dados-grid">
         <div class="dado-item reveal">
-          <div class="dado-number">8          <span class="dado-suffix">+</span></div>
+          <div class="dado-number">9<span class="dado-suffix">+</span></div>
           <p class="dado-label">Projetos entregues</p>
         </div>
         <div class="dado-item reveal">
@@ -234,7 +195,7 @@
     </div>
   </section>
 
-  <section id="projetos" data-transition="diagonal">
+  <section id="projetos">
     <div class="container">
       <h2 class="section-title reveal">Projetos</h2>
       <div class="projetos-grid">
@@ -262,6 +223,22 @@
             <h3>noir.barber</h3>
             <p>Site institucional para barbearia com design sofisticado e atmosfera premium. Identidade visual marcante e experiência imersiva.</p>
             <a href="https://noir-barber.onrender.com" target="_blank" rel="noopener noreferrer" class="projeto-link">
+              Ver projeto
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="projeto-card reveal reveal-delay-3">
+          <div class="projeto-thumb projeto-thumb-9">
+            <img src="img/spartan-gym.png" alt="Spartan Gym" loading="lazy">
+          </div>
+          <div class="projeto-info">
+            <h3>Spartan Gym</h3>
+            <p>Site completo para academia com design impactante, agendamento de treinos e identidade visual forte. Experiência digital que transmite força e resultado.</p>
+            <a href="https://academia-spartan-gym.vercel.app" target="_blank" rel="noopener noreferrer" class="projeto-link">
               Ver projeto
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <line x1="5" y1="12" x2="19" y2="12"/>
@@ -382,7 +359,7 @@
     </div>
   </section>
 
-  <section id="trabalho" data-transition="scanline">
+  <section id="trabalho">
     <div class="container">
       <h2 class="section-title reveal">Como eu trabalho</h2>
       <div class="timeline">
@@ -425,7 +402,7 @@
     </div>
   </section>
 
-  <section id="contato" data-transition="flash">
+  <section id="contato">
     <div class="container">
       <h2 class="section-title reveal">Contato</h2>
       <div class="contact-content reveal">

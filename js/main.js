@@ -238,9 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.ScrollTrigger) ScrollTrigger.update();
   }
 
-  const batSignalSky = document.querySelector('.bat-signal-sky');
-  const scrollProgressBar = document.querySelector('.scroll-progress');
-
   function updateEffects() {
     if (nav) {
       if (current > 80) nav.classList.add('scrolled');
@@ -256,19 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const heroHeight = heroSection.offsetHeight;
       const progress = Math.min(current / heroHeight, 1);
       heroImage.style.opacity = 1 - progress;
-    }
-
-    // Bat-signal distante varre o céu conforme o usuário percorre a página —
-    // dá a sensação de que Gotham continua se movendo por trás do conteúdo
-    const scrollProgress = maxScroll > 0 ? current / maxScroll : 0;
-
-    if (batSignalSky && !prefersReducedMotion) {
-      const angle = -16 + scrollProgress * 34; // varre de -16° a +18°
-      batSignalSky.style.transform = `rotate(${angle.toFixed(2)}deg)`;
-    }
-
-    if (scrollProgressBar) {
-      scrollProgressBar.style.width = (scrollProgress * 100).toFixed(2) + '%';
     }
   }
 
@@ -510,121 +494,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // === TRANSIÇÕES CINEMATOGRÁFICAS — uma linguagem visual diferente por seção ===
+  // === VARREDURA DE LUZ ENTRE SEÇÕES ===
   if (gsapReady) {
     try {
-      document.querySelectorAll('section[data-transition], #hero').forEach((section) => {
-        const type = section.dataset.transition;
-        if (!type) return; // hero tem sua própria abertura, não recebe transição de scroll
+      document.querySelectorAll('section').forEach((section) => {
+        const sweepWrap = document.createElement('div');
+        sweepWrap.className = 'section-sweep';
+        const bar = document.createElement('div');
+        bar.className = 'sweep-bar';
+        sweepWrap.appendChild(bar);
+        section.appendChild(sweepWrap);
 
-        const wrap = document.createElement('div');
-        wrap.className = 'section-sweep';
-        section.appendChild(wrap);
-
-        const tl = gsap.timeline({
-          scrollTrigger: { trigger: section, start: 'top 78%', once: true },
-        });
-
-        switch (type) {
-          case 'wipe': {
-            // Cortina de cinema: painel escuro se recolhe para cima revelando a seção
-            const panel = document.createElement('div');
-            panel.className = 'tr-wipe';
-            wrap.appendChild(panel);
-            tl.fromTo(panel, { scaleY: 1 }, { scaleY: 0, duration: 1.1, ease: 'power3.inOut' });
-            break;
-          }
-
-          case 'glitch': {
-            // Falha de sinal: blocos e linhas vermelhas piscando antes de estabilizar
-            const block = document.createElement('div');
-            block.className = 'tr-glitch-block';
-            wrap.appendChild(block);
-            const lines = [];
-            for (let i = 0; i < 4; i++) {
-              const l = document.createElement('div');
-              l.className = 'tr-glitch-line';
-              l.style.top = (15 + i * 22) + '%';
-              wrap.appendChild(l);
-              lines.push(l);
-            }
-            tl.to(block, { opacity: 0, duration: 0.05 }, 0.5)
-              .set(block, { opacity: 1 }, 0.55)
-              .to(block, { opacity: 0, duration: 0.4, ease: 'steps(4)' }, 0.6);
-            lines.forEach((l, i) => {
-              tl.fromTo(l, { opacity: 0, xPercent: -100 * (i % 2 === 0 ? 1 : -1) },
-                { opacity: 1, xPercent: 0, duration: 0.12 }, 0.15 + i * 0.07)
-                .to(l, { opacity: 0, duration: 0.15 }, 0.35 + i * 0.07);
-            });
-            break;
-          }
-
-          case 'spotlight': {
-            // Holofote circular que se expande a partir do centro
-            const circle = document.createElement('div');
-            circle.className = 'tr-spotlight';
-            wrap.appendChild(circle);
-            tl.fromTo(circle, { scale: 0.15 }, { scale: 1.4, duration: 1.2, ease: 'power2.inOut' });
-            break;
-          }
-
-          case 'blinds': {
-            // Venezianas verticais se abrem de cima para baixo
-            const blinds = document.createElement('div');
-            blinds.className = 'tr-blinds';
-            const cols = 8;
-            const bars = [];
-            for (let i = 0; i < cols; i++) {
-              const b = document.createElement('div');
-              b.className = 'tr-blind';
-              blinds.appendChild(b);
-              bars.push(b);
-            }
-            wrap.appendChild(blinds);
-            tl.to(bars, { scaleY: 0, duration: 0.9, ease: 'power2.inOut', stagger: 0.06 }, 0);
-            break;
-          }
-
-          case 'scanline': {
-            // Feixe vermelho varre de cima a baixo revelando a seção (linguagem do preloader)
-            const bg = document.createElement('div');
-            bg.className = 'tr-scanline-bg';
-            const beam = document.createElement('div');
-            beam.className = 'tr-scanline-beam';
-            wrap.appendChild(bg);
-            wrap.appendChild(beam);
-            tl.fromTo(beam, { top: '0%' }, { top: '100%', duration: 1.1, ease: 'power2.inOut' }, 0)
-              .to(bg, {
-                clipPath: 'inset(100% 0 0 0)',
-                duration: 1.1,
-                ease: 'power2.inOut',
-              }, 0);
-            break;
-          }
-
-          case 'flash': {
-            // Lampejo curto, como um clarão de raio ou flash de câmera
-            const flash = document.createElement('div');
-            flash.className = 'tr-flash';
-            wrap.appendChild(flash);
-            tl.to(flash, { opacity: 0.9, duration: 0.08, ease: 'power1.in' })
-              .to(flash, { opacity: 0, duration: 0.6, ease: 'power2.out' });
-            break;
-          }
-
-          case 'diagonal':
-          default: {
-            // Varredura diagonal original (mantida para #projetos)
-            const bar = document.createElement('div');
-            bar.className = 'sweep-bar';
-            wrap.appendChild(bar);
-            tl.fromTo(bar, { xPercent: -160 }, { xPercent: 460, duration: 1.1, ease: 'power2.inOut' });
-            break;
-          }
-        }
+        gsap.timeline({
+          scrollTrigger: { trigger: section, start: 'top 75%', once: true },
+        }).fromTo(bar, { xPercent: -160 }, { xPercent: 460, duration: 1.1, ease: 'power2.inOut' });
       });
     } catch (err) {
-      console.error('[cineFX] falha nas transições entre seções:', err);
+      console.error('[cineFX] falha na varredura entre seções:', err);
     }
   }
 
@@ -657,7 +543,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
       attach3DTilt('.servico-card', 6);
       attach3DTilt('.stack-card', 8);
-      attach3DTilt('.projeto-card', 5);
+
+      // Projetos: tilt 3D pronunciado com profundidade interna (thumb e info "flutuam")
+      document.querySelectorAll('.projeto-card').forEach((card) => {
+        card.style.transformStyle = 'preserve-3d';
+        const thumb = card.querySelector('.projeto-thumb');
+        const info = card.querySelector('.projeto-info');
+
+        card.addEventListener('mouseenter', () => {
+          gsap.to(card, { y: -6, duration: 0.35, ease: 'power2.out' });
+        });
+
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const px = (e.clientX - rect.left) / rect.width;
+          const py = (e.clientY - rect.top) / rect.height;
+          const rotateY = (px - 0.5) * 14;
+          const rotateX = (0.5 - py) * 14;
+          gsap.to(card, { rotateX, rotateY, transformPerspective: 800, duration: 0.4, ease: 'power2.out' });
+          if (thumb) gsap.to(thumb, { z: 40, duration: 0.4, ease: 'power2.out' });
+          if (info) gsap.to(info, { z: 25, duration: 0.4, ease: 'power2.out' });
+        });
+
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, { y: 0, rotateX: 0, rotateY: 0, duration: 0.6, ease: 'power3.out' });
+          if (thumb) gsap.to(thumb, { z: 0, duration: 0.5, ease: 'power3.out' });
+          if (info) gsap.to(info, { z: 0, duration: 0.5, ease: 'power3.out' });
+        });
+      });
     } catch (err) {
       console.error('[cineFX] falha no tilt 3D:', err);
     }
@@ -680,56 +593,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     } catch (err) {
       console.error('[cineFX] falha no parallax do hero:', err);
-    }
-  }
-
-  // === CHUVA AMBIENTE (canvas leve) ===
-  if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
-    try {
-      const canvas = document.getElementById('rainCanvas');
-      const rainHost = document.getElementById('hero');
-      if (canvas && rainHost) {
-        const ctx = canvas.getContext('2d');
-        let drops = [];
-        let rainW = 0, rainH = 0;
-
-        function sizeCanvas() {
-          rainW = canvas.width = rainHost.offsetWidth;
-          rainH = canvas.height = rainHost.offsetHeight;
-          const count = Math.floor((rainW * rainH) / 22000);
-          drops = Array.from({ length: count }, () => ({
-            x: Math.random() * rainW,
-            y: Math.random() * rainH,
-            len: 10 + Math.random() * 18,
-            speed: 6 + Math.random() * 7,
-            opacity: 0.08 + Math.random() * 0.18,
-          }));
-        }
-
-        function drawRain() {
-          ctx.clearRect(0, 0, rainW, rainH);
-          ctx.strokeStyle = 'rgba(200,210,230,1)';
-          ctx.lineWidth = 1;
-          drops.forEach((d) => {
-            ctx.globalAlpha = d.opacity;
-            ctx.beginPath();
-            ctx.moveTo(d.x, d.y);
-            ctx.lineTo(d.x - 2, d.y + d.len);
-            ctx.stroke();
-            d.y += d.speed;
-            d.x -= 0.6;
-            if (d.y > rainH) { d.y = -d.len; d.x = Math.random() * rainW; }
-          });
-          ctx.globalAlpha = 1;
-          requestAnimationFrame(drawRain);
-        }
-
-        sizeCanvas();
-        window.addEventListener('resize', sizeCanvas);
-        requestAnimationFrame(drawRain);
-      }
-    } catch (err) {
-      console.error('[cineFX] falha na chuva ambiente:', err);
     }
   }
 
@@ -784,55 +647,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateGlow() {
       glow.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
       rafId = null;
-    }
-  }
-
-  // === CURSOR CUSTOMIZADO — retícula vermelha, vira bat-signal sobre botões/links ===
-  if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
-    const cursorEl = document.querySelector('.custom-cursor');
-
-    if (cursorEl) {
-      let cx = -100, cy = -100;
-      let rx = -100, ry = -100;
-      let cursorRafId = null;
-
-      function loopCursor() {
-        // A retícula segue o mouse; o dot central tem leve arrasto para dar peso "mecânico"
-        rx += (cx - rx) * 0.35;
-        ry += (cy - ry) * 0.35;
-        cursorEl.style.transform = `translate(${rx}px, ${ry}px)`;
-        cursorRafId = requestAnimationFrame(loopCursor);
-      }
-      loopCursor();
-
-      document.addEventListener('mousemove', (e) => {
-        cx = e.clientX;
-        cy = e.clientY;
-        if (!cursorEl.classList.contains('active')) {
-          cursorEl.classList.add('active');
-        }
-      });
-
-      document.addEventListener('mouseleave', () => {
-        cursorEl.classList.remove('active');
-      });
-
-      const hoverTargets = 'a, button, .btn, .servico-card, .stack-card, .projeto-card, input, textarea, [role="button"]';
-
-      document.addEventListener('mouseover', (e) => {
-        if (e.target.closest && e.target.closest(hoverTargets)) {
-          cursorEl.classList.add('cursor-hover');
-        }
-      });
-
-      document.addEventListener('mouseout', (e) => {
-        if (e.target.closest && e.target.closest(hoverTargets)) {
-          const related = e.relatedTarget;
-          if (!related || !(related.closest && related.closest(hoverTargets))) {
-            cursorEl.classList.remove('cursor-hover');
-          }
-        }
-      });
     }
   }
 
@@ -1005,7 +819,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (Math.abs(newOpacity - currentAuraOpacity) > 0.005) {
         currentAuraOpacity = newOpacity;
         auraContainer.style.opacity = newOpacity;
-        auraContainer.classList.toggle('aura-active', newOpacity > 0.05);
       }
 
       if (Math.abs(newTarget - targetOffset) > 10) {
@@ -1022,7 +835,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!ready) return;
       currentAuraOpacity = 0;
       auraContainer.style.opacity = '0';
-      auraContainer.classList.remove('aura-active');
       targetOffset = totalMaxLength;
       if (!auraAnimId) {
         auraAnimId = requestAnimationFrame(animateAura);
