@@ -1,163 +1,92 @@
-# Portfólio — Filipe Lucas
+# Portfólio — Filipe Lucas (v3 — Design Azul/Navy)
 
 ## Estrutura de Diretórios
 
 ```
-portifolio/
+portfoli-main/
 ├── index.html              # Página única do portfólio
 ├── css/
-│   └── style.css           # Todos os estilos (~1170 linhas)
+│   └── style.css           # Todos os estilos
 ├── js/
-│   └── main.js             # JavaScript (~120 linhas)
+│   └── main.js              # JavaScript (nav, reveal, contadores, menu mobile)
 ├── img/
-│   ├── imageminicial.png   # Hero — imagem principal (1.6 MB)
-│   └── perfil.jpeg          # Seção Quem Sou (77 KB)
-├── skills/
-│   └── frontend-design/    # Skill de design (referência)
-├── .agents/
-│   └── skills/
-│       └── small-business-conversion/  # Skill de conversão
-└── RESUMO.md               # Este arquivo
+│   ├── perfil.jpeg          # Foto de perfil (hero)
+│   ├── cta-bg.jpeg          # Fundo da seção de contato (laptop com código)
+│   ├── catalogo-de-filme.png
+│   ├── card-resident-evill-village.png
+│   ├── card-lumina.png
+│   ├── spartan-gym.png
+│   ├── card-confeitaria.png
+│   ├── card-stranger-thigs.png
+│   └── hero-restaurante.png
+└── RESUMO.md
 ```
 
 ## Tecnologias
 
 - HTML5 semântico
-- CSS3 puro (Flexbox, Grid, Custom Properties, Keyframes, Media Queries)
+- CSS3 puro (Flexbox, Grid, Custom Properties, Media Queries)
 - JavaScript vanilla (IntersectionObserver, requestAnimationFrame)
-- Google Fonts: Cormorant Garamond + Inter
-- Zero dependências
+- Google Fonts: Sora (display) + Inter (body)
+- Zero dependências externas
 
 ## Design System
 
 | Token | Valor | Uso |
 |-------|-------|-----|
-| `--preto` | `#090909` | Fundo principal |
-| `--cinza-escuro` | `#141414` | Fundo de seções alternadas |
-| `--vinho` | `#5B0A0A` | Detalhes, bordas secundárias |
-| `--vermelho` | `#8A1010` | CTAs, destaques, hover |
-| `--texto` | `#F0F0F0` | Texto principal |
-| `--texto-dim` | `#999` | Texto secundário |
-| `--font-display` | `Cormorant Garamond` | Títulos (serif elegante) |
-| `--font-body` | `Inter` | Textos (sans-serif moderna) |
+| `--bg` | `#090D16` | Fundo principal |
+| `--bg-alt` | `#0C121F` | Fundo de seções alternadas (Sobre) |
+| `--panel` | `#111827` | Cards e painéis |
+| `--panel-2` | `#141C2E` | Fundo de thumbs sem imagem |
+| `--blue` | `#2F6FED` | Cor primária, CTAs |
+| `--blue-light` | `#5C9CFF` | Destaques, hover, eyebrows |
+| `--green` | `#22C55E` | Badge "disponível" |
+| `--text` | `#EEF2F9` | Texto principal |
+| `--text-dim` | `#97A1B5` | Texto secundário |
+| `--text-dimmer` | `#616B80` | Texto terciário/legenda |
+| `--font-display` | `Sora` | Títulos |
+| `--font-body` | `Inter` | Textos |
 
 ## Estrutura da Página
 
-### 1. Hero (`#hero`)
-- Tela cheia, fundo escuro
-- Imagem `imageminicial.png` à direita (~38vw, max 420px)
-- Nome: **FILIPE LUCAS** (Cormorant Garamond, vermelho destaque no primeiro nome)
-- Subtítulo + descrição + 2 CTAs ("Ver projetos" / "Entrar em contato")
-- Indicador de scroll animado (seta pulsando no fim do hero)
-- Camadas visuais: noise overlay, névoa atmosférica, vinheta
+1. **Hero (`#inicio`)** — Nome grande, foto em moldura arredondada com badge `</>`, botões, redes sociais.
+2. **Sobre (`#sobre`)** — Texto + tags de localização/disponibilidade + 4 cards de estatística com contador animado.
+3. **Projetos (`#projetos`)** — 3 cards em destaque (Catálogo de Filmes, Business OS, Resident Evil Village) + grade de 6 "mais projetos" (Lumina, Spartan Gym, Confeitaria, Stranger Things, Restaurante Brasa).
+4. **Habilidades (`#habilidades`)** — Painel de linguagens/ferramentas + painel de IA, com badges coloridos por tecnologia.
+5. **Experiência (`#experiencia`)** — Formação (UniCesumar) + experiência freelancer, em cards lado a lado.
+6. **Contato (`#contato`)** — Painel com imagem de fundo (laptop) + overlay azul, CTA para WhatsApp.
+7. **Footer** — Marca, navegação, copyright, watermark "FL." decorativo.
 
-### 2. Quem Sou (`#sobre`)
-- Grid 2 colunas (desktop) / 1 coluna (mobile)
-- Foto `perfil.jpeg` (340px altura desktop, 240px mobile)
-- Título "Quem sou" + 3 parágrafos descritivos
+## Observações e pendências
 
-### 3. O Que Eu Construo (`#servicos`)
-- Grid 2x2 de cards (desktop) / empilhado (mobile)
-- 4 cards com ícones SVG:
-  - Sites institucionais
-  - Landing pages
-  - Design personalizado
-  - Experiência mobile
-- Hover: translateY(-4px) + borda superior em vermelho
-
-### 4. Projetos (`#projetos`)
-- Grid 3 colunas (desktop) / 1 coluna (mobile)
-- 3 projetos com thumbnails gradientes + overlay hover (vinho semi-transparente com "Ver projeto")
-- Links externos para cada projeto (abrem em nova aba)
-- Projetos:
-  - Confeitaria Maiza Borges
-  - Spotify Page
-  - Stranger Things
-
-### 5. Como Eu Trabalho (`#trabalho`)
-- Timeline vertical com 5 etapas numeradas (01-05)
-- Linha com gradiente vinho → vermelho → transparente
-- Scroll reveal sequencial (cada item aparece com atraso)
-
-### 6. Contato (`#contato`)
-- Centralizado, links clicáveis
-- Instagram: @filipe_lucas7
-- Email: filipelucasfsa@gmail.com
-- WhatsApp: botão verde proeminente (CTA principal)
-- Frase de encerramento em itálico (Cormorant Garamond)
-
-### Footer
-- Grid 3 colunas: marca + navegação + redes sociais
-- Badge "Disponível para novos projetos" com indicador verde pulsante
-- Links de navegação rápida para todas as seções
-- Ícones das redes sociais (Instagram, Email, WhatsApp)
-- Copyright
+- **Card "Business OS"** ainda não tem link (projeto em desenvolvimento) — usa um placeholder visual com o glifo "OS" em vez de screenshot. Quando o projeto estiver publicado, é só trocar o bloco `.projeto-thumb-placeholder` por uma `<img>` real e adicionar o link em `.projeto-link`.
+- **Botão "Entrar em contato" no menu** aponta para `#contato`. Se quiser trocar por "Download CV", basta adicionar o PDF em uma pasta (ex: `cv/`) e trocar o `href` para o caminho do arquivo, com atributo `download`.
+- Ícones de tecnologia usam iniciais/abreviações coloridas (sem dependência de bibliotecas de ícones externas) — fácil de trocar por SVGs de marca depois, se preferir.
 
 ## Responsividade
 
-| Breakpoint | Alvo | Comportamento |
-|---|---|---|
-| < 768px | Mobile | Tudo empilhado, hero vertical, hambúrguer, footer em 1 coluna |
-| 768–1024px | Tablet | Grids adaptados, padding reduzido |
-| > 1024px | Desktop | Layout completo, hero lado a lado |
-| > 1400px | Wide | Padding extra no hero content |
-
-## Animações e Efeitos
-
-| Efeito | Descrição | Técnica |
-|--------|-----------|---------|
-| Hero fade-in | Nome → subtítulo → descrição → botões (stagger 0.2s) | CSS keyframes |
-| Body fade-in | Página aparece com fade de 0.6s | CSS keyframes |
-| Scroll reveal | Elementos aparecem ao entrar na viewport | IntersectionObserver |
-| Cursor glow | Radial gradiente `#8A1010` seguindo o mouse | requestAnimationFrame |
-| Hover cards | translateY(-4px) + borda destaque | CSS transition |
-| Hover projetos | Overlay vinho com "Ver projeto" | CSS pseudo-element |
-| Scroll indicator | Seta pulsando no fim do hero | CSS keyframes |
-| Névoa atmosférica | Gradientes animados com blur (drift 25s/30s) | CSS keyframes |
-| Noise overlay | Textura de grão cinematográfico | SVG turbulence filter |
-| Vinheta | Radial gradient escurecendo bordas | CSS radial-gradient |
-| Badge pulsante | Indicador verde "Disponível" no footer | CSS keyframes |
-| Back to top | Botão aparece após 300px de scroll | JS + CSS transition |
-| Reduced motion | Tudo desativado via `prefers-reduced-motion` | Media query + JS |
+| Breakpoint | Comportamento |
+|---|---|
+| < 480px | 1 coluna em quase tudo, stats 2 colunas |
+| < 768px | Menu hambúrguer (slide-in lateral), grids em 1 coluna |
+| < 1024px | Hero empilha (foto acima do texto), stats/skills 2 colunas |
+| > 1024px | Layout completo lado a lado |
 
 ## Interatividade (JS)
 
-| Funcionalidade | Técnica | Local |
-|---|---|---|
-| Menu mobile | Toggle class + slide-in | `main.js:22-40` |
-| Scroll reveal | IntersectionObserver (threshold 0.08) | `main.js:42-59` |
-| Cursor glow | requestAnimationFrame + mousemove | `main.js:63-90` |
-| Nav scroll | Classe `scrolled` após 80px | `main.js:9-19` |
-| Back to top | Show/hide no scroll + click to top | `main.js:63-79` |
-| Smooth scroll | scrollTo com offset do nav | `main.js:82-100` |
-
-## Performance
-
-- Zero dependências externas (além das fontes do Google)
-- Animações GPU: `transform` e `opacity` apenas
-- Imagens com `loading="lazy"` (exceto hero)
-- Google Fonts com `display=swap`
-- `will-change: transform` no cursor glow
-- Event listeners passivos para scroll
-- CSS otimizado sem imports desnecessários
-
-## Acessibilidade
-
-- `prefers-reduced-motion` suportado (desativa todas as animações)
-- `:focus-visible` com outline vermelho
-- ARIA: `aria-label`, `aria-expanded`, `aria-hidden`
-- Navegação por teclado em todos os elementos interativos
-- `alt` texts nas imagens
-- Contraste suficiente entre texto e fundo
-- Botões com tamanhos adequados para toque mobile
+| Funcionalidade | Técnica |
+|---|---|
+| Menu mobile | Toggle de classe + slide-in lateral |
+| Scroll reveal | IntersectionObserver (threshold 0.1) |
+| Contadores animados | IntersectionObserver + easing cúbico |
+| Nav ativo no scroll | IntersectionObserver por seção |
+| Cursor glow (desktop) | requestAnimationFrame + mousemove |
+| Back to top | Aparece após 400px de scroll |
+| Scroll suave em âncoras | `scrollTo` com offset do nav |
+| `prefers-reduced-motion` | Desativa reveal e cursor glow |
 
 ## Manutenção
 
-Para alterar cores: editar as variáveis no `:root` do `style.css`.
-
-Para adicionar projetos: copiar um bloco `.projeto-card` no HTML e atualizar link, nome e descrição.
-
-Para adicionar serviços: copiar um bloco `.servico-card` no HTML.
-
-Para trocar imagens: substituir os arquivos em `img/` mantendo os mesmos nomes.
-  
+- Cores: editar variáveis no `:root` do `style.css`.
+- Adicionar projeto: copiar um bloco `.projeto-card` no HTML (grade principal ou `#mais-projetos`).
+- Trocar imagens: substituir os arquivos em `img/` mantendo os mesmos nomes, ou atualizar o `src`.
