@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { usePrefersReducedMotion } from "@/hooks/useDeviceTier";
+import { useDeviceTier, usePrefersReducedMotion } from "@/hooks/useDeviceTier";
 import ColorBends from "@/components/ColorBends";
 import LiquidEther from "@/components/LiquidEther";
 
@@ -13,6 +13,7 @@ import LiquidEther from "@/components/LiquidEther";
 export default function AmbientField() {
   const { scrollYProgress } = useScroll();
   const reducedMotion = usePrefersReducedMotion();
+  const tier = useDeviceTier();
 
   // Section bands (approximate, tuned to page proportions):
   // hero 0 - .12 | about .10 - .30 | skills .28 - .55 | projects .50 - .85 | contact .82 - 1
@@ -109,15 +110,18 @@ export default function AmbientField() {
       {/* vignette */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_40%,rgba(0,0,0,0.30)_100%)]" />
 
-      {/* liquid ether — subtly overlays everything above, low opacity */}
-      {!reducedMotion && (
+      {/* liquid ether — full-tier devices only, low cost: it is the heaviest
+          pass on the page (fluid sim), so cap resolution + poisson iterations
+          and skip entirely on reduced/minimal devices */}
+      {!reducedMotion && tier === "full" && (
         <div className="absolute inset-0" style={{ opacity: 0.3 }}>
           <LiquidEther
             colors={["#3b6fed", "#7c5cff", "#4fd8ff"]}
             autoDemo
             autoSpeed={0.35}
             autoIntensity={1.4}
-            resolution={0.42}
+            resolution={0.32}
+            iterationsPoisson={8}
             mouseForce={6}
           />
         </div>

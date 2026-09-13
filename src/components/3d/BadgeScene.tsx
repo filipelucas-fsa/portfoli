@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Environment, Lightformer, useProgress } from "@react-three/drei";
@@ -47,6 +47,8 @@ function SceneReady() {
 
 export default function BadgeScene({ photoUrl, name, role }: BadgeSceneProps) {
   const [isMobile, setIsMobile] = useState<boolean>(() => window.innerWidth < 768);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const [inView, setInView] = useState(true);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 768);
@@ -54,40 +56,56 @@ export default function BadgeScene({ photoUrl, name, role }: BadgeSceneProps) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // Pause the render loop entirely while the hero (badge) is offscreen —
+  // the badge is only visible in the hero, so we save the full GPU cost of
+  // physics + clearcoat on every other section.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+      threshold: 0,
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   useEffect(() => {
     preloaderStore.setProgress(45);
   }, []);
 
   return (
-    <Canvas
-      camera={{ position: [0, 0.75, 7.6], fov: 30 }}
-      dpr={[1, isMobile ? 1.5 : 1.75]}
-      gl={{ antialias: true, alpha: true }}
-      style={{ position: "absolute", inset: 0 }}
-    >
-      <ambientLight intensity={0.9} />
-      <directionalLight position={[2.5, 3, 2]} intensity={2} color="#ffffff" />
-      <pointLight position={[-2, -1, 2]} intensity={0.8} color="#ffffff" />
-      <pointLight position={[1.5, 1.5, -2]} intensity={0.6} color="#ffffff" />
+    <div ref={wrapRef} className="absolute inset-0">
+      <Canvas
+        camera={{ position: [0, 0.75, 7.6], fov: 30 }}
+        dpr={[1, isMobile ? 1.25 : 1.5]}
+        frameloop={inView ? "always" : "never"}
+        gl={{ antialias: true, alpha: true }}
+        style={{ position: "absolute", inset: 0 }}
+      >
+        <ambientLight intensity={0.9} />
+        <directionalLight position={[2.5, 3, 2]} intensity={2} color="#ffffff" />
+        <pointLight position={[-2, -1, 2]} intensity={0.8} color="#ffffff" />
+        <pointLight position={[1.5, 1.5, -2]} intensity={0.6} color="#ffffff" />
 
-      <LoadProgressBridge />
+        <LoadProgressBridge />
 
-      <Suspense fallback={null}>
-        {/* Full render signal — fires only when everything needed by the badge
-            has loaded */}
-        <SceneReady />
+        <Suspense fallback={null}>
+          {/* Full render signal — fires only when everything needed by the badge
+              has loaded */}
+          <SceneReady />
 
-        {/* Fully synthetic, self-contained environment (no external HDR fetch) -
-            gives the clearcoat material soft reflections without a network dependency. */}
-        <Environment resolution={64}>
-          <Lightformer intensity={3} color="#ffffff" position={[0, 2, -4]} scale={[8, 4, 1]} />
-          <Lightformer intensity={1.5} color="#e6e6ee" position={[-4, 0, 2]} scale={[4, 3, 1]} rotation-y={Math.PI / 3} />
-          <Lightformer intensity={1.2} color="#ffffff" position={[4, 1, 3]} scale={[3, 3, 1]} rotation-y={-Math.PI / 3} />
-        </Environment>
-        <Physics gravity={[0, -13, 0]} timeStep={isMobile ? 1 / 30 : 1 / 60}>
-          <BadgeRig photoUrl={photoUrl} name={name} role={role} isMobile={isMobile} />
-        </Physics>
-      </Suspense>
-    </Canvas>
+          {/* Fully synthetic, self-contained environment (no external HDR fetch) -
+              gives the clearcoat material soft reflections without a network dependency. */}
+          <Environment resolution={64} frames={1}>
+            <Lightformer intensity={3} color="#ffffff" position={[0, 2, -4]} scale={[8, 4, 1]} />
+            <Lightformer intensity={1.5} color="#e6e6ee" position={[-4, 0, 2]} scale={[4, 3, 1]} rotation-y={Math.PI / 3} />
+            <Lightformer intensity={1.2} color="#ffffff" position={[4, 1, 3]} scale={[3, 3, 1]} rotation-y={-Math.PI / 3} />
+          </Environment>
+          <Physics gravity={[0, -13, 0]} timeStep={isMobile ? 1 / 30 : 1 / 60}>
+            <BadgeRig photoUrl={photoUrl} name={name} role={role} isMobile={isMobile} />
+          </Physics>
+        </Suspense>
+      </Canvas>
+    </div>
   );
 }

@@ -47,10 +47,7 @@ export default function BadgeMesh({ photoUrl, name, hovered }: BadgeMeshProps) {
           metalness={0.05}
           clearcoat={1}
           clearcoatRoughness={0.15}
-          transmission={0.08}
-          thickness={0.4}
-          ior={1.4}
-          reflectivity={0.5}
+          transmission={0}
         />
       </RoundedBox>
 
