@@ -31,7 +31,7 @@ export default function AmbientField() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-10%,#0a0e1c_0%,#05060a_55%)]" />
 
       {/* soft color bends shader, barely-there backdrop */}
-      {!reducedMotion && (
+      {tier !== "minimal" && (
         <div className="absolute inset-0 opacity-[0.95]">
           <ColorBends
             speed={0.08}
@@ -113,15 +113,15 @@ export default function AmbientField() {
       {/* liquid ether — full-tier devices only, low cost: it is the heaviest
           pass on the page (fluid sim), so cap resolution + poisson iterations
           and skip entirely on reduced/minimal devices */}
-      {!reducedMotion && tier === "full" && (
+      {tier === "full" && (
         <div className="absolute inset-0" style={{ opacity: 0.3 }}>
           <LiquidEther
             colors={["#3b6fed", "#7c5cff", "#4fd8ff"]}
             autoDemo
             autoSpeed={0.35}
             autoIntensity={1.4}
-            resolution={0.32}
-            iterationsPoisson={8}
+            resolution={0.2}
+            iterationsPoisson={4}
             mouseForce={6}
           />
         </div>
