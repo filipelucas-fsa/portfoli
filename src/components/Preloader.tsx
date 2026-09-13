@@ -110,7 +110,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
             }}
             className="font-hero text-[clamp(48px,9vw,120px)] font-extrabold leading-none tracking-tight text-ink"
           >
-            loadinq
+            loading
           </motion.p>
         </div>
 
