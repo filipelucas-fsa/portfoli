@@ -85,7 +85,9 @@ export function useDeviceTier(): DeviceTier {
  * weak GPUs. Only the background effects (fluid sim, etc.) react to this.
  */
 export function useAdaptiveQuality(): AdaptiveQuality {
-  const [quality, setQuality] = useState<AdaptiveQuality>("high");
+  const [quality, setQuality] = useState<AdaptiveQuality>(() =>
+    computeStaticTier() === "full" ? "high" : "low",
+  );
 
   useEffect(() => {
     if (computeStaticTier() !== "full") return;

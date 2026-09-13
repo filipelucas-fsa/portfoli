@@ -14,7 +14,10 @@ interface BadgeProps {
 
 export default function Badge({ photoUrl, name, role }: BadgeProps) {
   const tier = useDeviceTier();
-  const use3D = tier === "full";
+  // 3D on every tier except "minimal" (only when the OS requests reduced
+  // motion). On mobile ("reduced") the 3D is already configured light:
+  // physics at 1/30 and capped DPR, so it still runs smoothly.
+  const use3D = tier !== "minimal";
 
   const fallback = <BadgeFallback photoUrl={photoUrl} name={name} />;
 

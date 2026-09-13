@@ -37,8 +37,10 @@ export default function AmbientField() {
       {/* base vertical gradient - deep black to near-black blue */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-10%,#0a0e1c_0%,#05060a_55%)]" />
 
-      {/* soft color bends shader, barely-there backdrop */}
-      {tier !== "minimal" && (
+      {/* soft color bends shader, barely-there backdrop. Only on high ambient
+          quality (full-tier + healthy FPS) — mobile/low-end GPUs keep the
+          GPU headroom for the 3D badge instead. */}
+      {tier !== "minimal" && quality === "high" && (
         <div className="absolute inset-0 opacity-[0.95]">
           <ColorBends
             speed={0.08}
