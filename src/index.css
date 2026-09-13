@@ -1,0 +1,108 @@
+@import "tailwindcss";
+@import "@fontsource/syne/700.css";
+@import "@fontsource/syne/800.css";
+@import "@fontsource/sora/400.css";
+@import "@fontsource/sora/600.css";
+@import "@fontsource/sora/700.css";
+@import "@fontsource/sora/800.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+@theme {
+  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-hero: "Syne", ui-sans-serif, system-ui, sans-serif;
+
+  --color-void: #05060a;
+  --color-abyss: #070911;
+  --color-panel: #0c0f1a;
+  --color-panel-2: #10131f;
+  --color-line: rgba(255,255,255,0.08);
+  --color-line-strong: rgba(255,255,255,0.14);
+
+  --color-blue: #3b6fed;
+  --color-blue-light: #6c9bff;
+  --color-violet: #7c5cff;
+  --color-cyan: #4fd8ff;
+
+  --color-ink: #eef1f8;
+  --color-ink-dim: #98a1b8;
+  --color-ink-dimmer: #5c6478;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--color-void);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-void);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  #root {
+    position: relative;
+    min-height: 100svh;
+  }
+
+  ::selection {
+    background: rgba(59, 111, 237, 0.35);
+    color: #fff;
+  }
+
+  a { color: inherit; }
+
+  /* custom scrollbar, subtle */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--color-void); }
+  ::-webkit-scrollbar-thumb { background: #1c2233; border-radius: 8px; border: 2px solid var(--color-void); }
+  ::-webkit-scrollbar-thumb:hover { background: #29314a; }
+
+  /* hide native cursor on fine-pointer desktop when custom cursor active */
+  html.custom-cursor-active, html.custom-cursor-active * {
+    cursor: none !important;
+  }
+}
+
+.font-display { font-family: var(--font-display); }
+.font-mono { font-family: var(--font-mono); }
+.font-hero { font-family: var(--font-hero); }
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+.animate-pulse-soft { animation: pulse-soft 2.4s ease-in-out infinite; }
+
+@keyframes grain-shift {
+  0%, 100% { transform: translate(0,0); }
+  10% { transform: translate(-1%,-2%); }
+  30% { transform: translate(2%,1%); }
+  50% { transform: translate(-2%,2%); }
+  70% { transform: translate(1%,-1%); }
+  90% { transform: translate(-1%,1%); }
+}
