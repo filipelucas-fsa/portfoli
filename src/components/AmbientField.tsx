@@ -1,5 +1,9 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useDeviceTier, usePrefersReducedMotion } from "@/hooks/useDeviceTier";
+import {
+  useAdaptiveQuality,
+  useDeviceTier,
+  usePrefersReducedMotion,
+} from "@/hooks/useDeviceTier";
 import ColorBends from "@/components/ColorBends";
 import LiquidEther from "@/components/LiquidEther";
 
@@ -14,6 +18,9 @@ export default function AmbientField() {
   const { scrollYProgress } = useScroll();
   const reducedMotion = usePrefersReducedMotion();
   const tier = useDeviceTier();
+  // Ambient performance signal — only the background effects depend on it,
+  // never the 3D badge.
+  const quality = useAdaptiveQuality();
 
   // Section bands (approximate, tuned to page proportions):
   // hero 0 - .12 | about .10 - .30 | skills .28 - .55 | projects .50 - .85 | contact .82 - 1
@@ -110,10 +117,11 @@ export default function AmbientField() {
       {/* vignette */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_40%,rgba(0,0,0,0.30)_100%)]" />
 
-      {/* liquid ether — full-tier devices only, low cost: it is the heaviest
-          pass on the page (fluid sim), so cap resolution + poisson iterations
-          and skip entirely on reduced/minimal devices */}
-      {tier === "full" && (
+      {/* liquid ether — full-tier devices only; additionally capped by the
+          runtime adaptive check, so weak GPUs get fluid turned off before
+          (never) the 3D badge. Resolution + poisson iterations stay low:
+          this is the heaviest pass on the page. */}
+      {tier === "full" && quality === "high" && (
         <div className="absolute inset-0" style={{ opacity: 0.3 }}>
           <LiquidEther
             colors={["#3b6fed", "#7c5cff", "#4fd8ff"]}

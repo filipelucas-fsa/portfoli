@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 
 export type DeviceTier = "full" | "reduced" | "minimal";
+export type AdaptiveQuality = "high" | "low";
 
+const FPS_DELAY_MS = 3500;
 const FPS_WARMUP_MS = 400;
 const FPS_WINDOW_MS = 1500;
 const FPS_DOWNGRADE_THRESHOLD = 45;
@@ -25,9 +27,8 @@ function computeStaticTier(): DeviceTier {
 }
 
 /**
- * Samples real rendering throughput shortly after mount (while the 3D and
- * shader work is already live) and downgrades the tier if the device can't
- * hold near 60fps. This adapts to actual GPU headroom instead of guessing.
+ * Samples real rendering throughput a few seconds after load, once the heavy
+ * WASM/3D startup is over, and reports the steady-state framerate.
  */
 function measureFps(onResult: (avgFps: number) => void): () => void {
   const t0 = performance.now();
@@ -37,7 +38,7 @@ function measureFps(onResult: (avgFps: number) => void): () => void {
   let finished = false;
   const tick = (now: number) => {
     if (finished) return;
-    if (now - t0 < FPS_WARMUP_MS) {
+    if (now - t0 < FPS_DELAY_MS + FPS_WARMUP_MS) {
       raf = requestAnimationFrame(tick);
       return;
     }
@@ -61,33 +62,40 @@ function measureFps(onResult: (avgFps: number) => void): () => void {
 
 /**
  * Estimates a rough device capability tier so we can scale down
- * 3D / particle complexity on mobile and low-power devices, and
- * eliminate it entirely when the user prefers reduced motion.
+ * 3D complexity on mobile and low-power devices, and eliminate it
+ * entirely when the user prefers reduced motion.
  *
- * After the initial estimate, the tier is re-checked against real
- * rendering throughput and stepped down if the machine is struggling.
+ * IMPORTANT: this is static/hardware-based and never changes at runtime,
+ * because the 3D badge render path depends on it. Ambient effects use
+ * useAdaptiveQuality() instead, so a slow GPU never removes the badge.
  */
 export function useDeviceTier(): DeviceTier {
   const [tier, setTier] = useState<DeviceTier>("full");
 
   useEffect(() => {
-    const staticTier = computeStaticTier();
-    setTier(staticTier);
+    setTier(computeStaticTier());
+  }, []);
 
-    // No WebGL/ambient GPU work to monitor on minimal; nothing to adapt.
-    if (staticTier === "minimal") return;
+  return tier;
+}
 
+/**
+ * Adaptive ambient quality, separate from the 3D badge decision. Starts at
+ * "high", then after load measures steady-state FPS and drops to "low" on
+ * weak GPUs. Only the background effects (fluid sim, etc.) react to this.
+ */
+export function useAdaptiveQuality(): AdaptiveQuality {
+  const [quality, setQuality] = useState<AdaptiveQuality>("high");
+
+  useEffect(() => {
+    if (computeStaticTier() !== "full") return;
     const cancel = measureFps((avg) => {
-      if (avg < FPS_DOWNGRADE_THRESHOLD) {
-        setTier((prev) =>
-          prev === "full" ? "reduced" : prev === "reduced" ? "minimal" : prev,
-        );
-      }
+      if (avg < FPS_DOWNGRADE_THRESHOLD) setQuality("low");
     });
     return cancel;
   }, []);
 
-  return tier;
+  return quality;
 }
 
 export function usePrefersReducedMotion(): boolean {
