@@ -213,6 +213,26 @@ export default function BadgeRig({ photoUrl, name, role, isMobile }: BadgeRigPro
         const strength = hovered ? 0.02 : 0.012;
         card.current?.applyTorqueImpulse({ x: -dy * strength, y: dx * strength, z: dx * strength * 0.5 }, true);
       }
+      // continuous idle pendulum sway: keeps the rig visibly physical even
+      // with no input (mobile has no pointermove between touches and the
+      // damped joints would otherwise settle and fall asleep instantly),
+      // and re-wakes the whole chain so the rope stays alive.
+      const t = state.clock.elapsedTime;
+      const idleStrength = isMobile ? 0.006 : 0.0025;
+      card.current?.applyTorqueImpulse(
+        {
+          x: idleStrength * (0.6 + 0.4 * Math.sin(t * 0.9)),
+          y: Math.cos(t * 0.5) * idleStrength * 0.6,
+          z: Math.sin(t * 0.35) * idleStrength * 0.4,
+        },
+        true,
+      );
+      card.current?.wakeUp();
+      j1.current?.wakeUp();
+      j2.current?.wakeUp();
+      j3.current?.wakeUp();
+      j4.current?.wakeUp();
+      j5.current?.wakeUp();
       // safety clamp: never let angular velocity run away (prevents jitter/spin)
       const av = card.current?.angvel();
       if (av) {
