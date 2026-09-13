@@ -102,7 +102,7 @@ export default function Hero() {
             transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="absolute -inset-x-16 -inset-y-48 flex items-center justify-center"
           >
-            <Badge photoUrl="/img/perfil.jpeg" name={site.name} role={site.role} />
+            <Badge photoUrl="img/perfil.jpeg" name={site.name} role={site.role} />
           </motion.div>
         </div>
       </div>
